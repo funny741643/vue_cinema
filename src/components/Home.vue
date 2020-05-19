@@ -10,17 +10,14 @@
       </div>
     </el-header>
     <el-menu
-      :default-active="activeIndex"
+      :default-active="activePath"
       class="el-menu-demo"
       mode="horizontal"
-      @select="handleSelect"
+      router
     >
-      <el-menu-item index="1">热映电影</el-menu-item>
-      <el-menu-item index="2">即将上映</el-menu-item>
-      <el-menu-item index="3" disabled>消息中心</el-menu-item>
-      <el-menu-item index="4">
-        <a href="https://www.ele.me" target="_blank">订单管理</a>
-      </el-menu-item>
+      <el-menu-item index="/nowon" @click="saveNavState('/nowon')">正在热映</el-menu-item>
+      <el-menu-item index="/willon" @click="saveNavState('/willon')">即将上映</el-menu-item>
+      <el-menu-item index="/hoton" @click="saveNavState('/hoton')">热播电影</el-menu-item>
     </el-menu>
     <el-main>
       <router-view></router-view>
@@ -33,16 +30,21 @@
 export default {
   data() {
     return {
-      activeIndex: '1'
+      activePath: '/nowon'
     }
+  },
+  mounted() {
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
+    saveNavState(activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
-  },
+  }
 }
 </script>
+
 <style lang="less" scoped>
 .home-container {
   height: 100%;

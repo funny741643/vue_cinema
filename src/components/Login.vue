@@ -39,7 +39,7 @@ export default {
       },
       loginFormRules: {
         username: [
-          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { required: true, message: '请输入登录账号', trigger: 'blur' },
           { min:6, max:12, message: '长度在6到12位之间', trigger: 'blur' }
         ],
         password: [

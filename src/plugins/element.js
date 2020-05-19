@@ -9,7 +9,9 @@ import {
   FormItem,
   Input,
   Link,
-  Button
+  Button,
+  Carousel,
+  CarouselItem
 } from 'element-ui'
 
 Vue.use(Container)
@@ -22,3 +24,5 @@ Vue.use(FormItem)
 Vue.use(Input)
 Vue.use(Link)
 Vue.use(Button)
+Vue.use(Carousel)
+Vue.use(CarouselItem)

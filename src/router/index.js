@@ -3,6 +3,9 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Register from '../components/Register.vue'
+import Nowon from '../components/Nowon/Nowon.vue'
+import Willon from '../components/Willon/Willon.vue'
+import Hoton from '../components/Hoton/Hoton.vue'
 Vue.use(VueRouter)
 const routes = [{
     path: '/',
@@ -18,7 +21,18 @@ const routes = [{
   },
   {
     path: '/home',
-    component: Home
+    component: Home,
+    redirect: '/nowon',
+    children: [{
+      path: '/nowon',
+      component: Nowon
+    }, {
+      path: '/willon',
+      component: Willon
+    }, {
+      path: '/hoton',
+      component: Hoton
+    }]
   }
 ]
 
