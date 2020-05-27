@@ -6,6 +6,10 @@ import Register from '../components/Register.vue'
 import Nowon from '../components/Nowon/Nowon.vue'
 import Willon from '../components/Willon/Willon.vue'
 import Hoton from '../components/Hoton/Hoton.vue'
+import Movies from '../components/Movies/Movies.vue'
+import Admin from '../components/Admin/admin.vue'
+import MovieDetail from '../components/MovieDetail/index.vue'
+import Ticket from '../components/Ticket/index.vue'
 Vue.use(VueRouter)
 const routes = [{
     path: '/',
@@ -20,6 +24,10 @@ const routes = [{
     component: Register
   },
   {
+    path: '/admin',
+    component: Admin
+  },
+  {
     path: '/home',
     component: Home,
     redirect: '/nowon',
@@ -32,6 +40,16 @@ const routes = [{
     }, {
       path: '/hoton',
       component: Hoton
+    }, {
+      path: '/movies',
+      name: 'Movies',
+      component: Movies
+    }, {
+      path: '/moviedetail/:id',
+      component: MovieDetail
+    }, {
+      path: '/ticket/:id',
+      component: Ticket
     }]
   }
 ]

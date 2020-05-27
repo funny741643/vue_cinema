@@ -9,16 +9,20 @@
         <el-link type="primary" href="#/login" style="fontSize:20px">点击登录</el-link>
       </div>
     </el-header>
-    <el-menu
-      :default-active="activePath"
-      class="el-menu-demo"
-      mode="horizontal"
-      router
-    >
-      <el-menu-item index="/nowon" @click="saveNavState('/nowon')">正在热映</el-menu-item>
-      <el-menu-item index="/willon" @click="saveNavState('/willon')">即将上映</el-menu-item>
-      <el-menu-item index="/hoton" @click="saveNavState('/hoton')">热播电影</el-menu-item>
-    </el-menu>
+    <div class="nav">
+      <el-menu :default-active="activePath" class="el-menu-demo" mode="horizontal" router>
+        <el-menu-item index="/nowon" @click="saveNavState('/nowon')">正在热映</el-menu-item>
+        <el-menu-item index="/willon" @click="saveNavState('/willon')">即将上映</el-menu-item>
+        <el-menu-item index="/hoton" @click="saveNavState('/hoton')">热播电影</el-menu-item>
+      </el-menu>
+      <el-input
+        v-model="searchValue"
+        placeholder="搜索电影"
+        prefix-icon="el-icon-search"
+        @change="search"
+        id="searchInput"
+      ></el-input>
+    </div>
     <el-main>
       <router-view></router-view>
     </el-main>
@@ -30,7 +34,11 @@
 export default {
   data() {
     return {
-      activePath: '/nowon'
+      activePath: '/nowon',
+      searchValue: '',
+      MOVIE_API_URL: 'https://www.omdbapi.com/?s=man&apikey=4a3b711b',
+      movies: [],
+      key: true
     }
   },
   mounted() {
@@ -40,6 +48,19 @@ export default {
     saveNavState(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath
+    },
+    search() {
+      this.$http.post(`https://www.omdbapi.com/?s=${this.searchValue}&apikey=4a3b711b`).then(res => {
+        this.movies = res.data.Search
+        console.log(this.movies)
+        if (this.$route.path !== '/movies') {
+          this.$router.push({name: 'Movies'})
+          window.localStorage.setItem('searchMoviesValue',JSON.stringify(this.movies))
+        } else {
+          window.localStorage.setItem('searchMoviesValue',JSON.stringify(this.movies))
+        }
+        document.getElementById('searchInput').value = ''
+      })
     }
   }
 }
@@ -64,6 +85,16 @@ export default {
       margin-left: 15px;
     }
   }
+}
+.nav {
+  display: flex;
+  justify-items: center;
+  width: 85%;
+  margin: 0 auto;
+}
+.el-input--prefix {
+  line-height: 60px;
+  width: 500px;
 }
 .el-main {
   background-color: #eaedf1;

@@ -21,7 +21,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item class="btns">
-          <el-button type="primary" class="loginBtn">点击登录</el-button>
+          <el-button type="primary" class="loginBtn" @click="handleLogin">点击登录</el-button>
           <el-link href="#/register">前往注册</el-link>
         </el-form-item>
       </el-form>
@@ -34,13 +34,13 @@ export default {
   data() {
     return {
       loginForm: {
-        email: '',
+        username: '',
         password: ''
       },
       loginFormRules: {
         username: [
           { required: true, message: '请输入登录账号', trigger: 'blur' },
-          { min:6, max:12, message: '长度在6到12位之间', trigger: 'blur' }
+          { min: 6, max: 12, message: '长度在6到12位之间', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入登录密码', trigger: 'blur' },
@@ -49,7 +49,16 @@ export default {
       }
     }
   },
-  methods: {}
+  methods: {
+    handleLogin() {
+      // get
+      // post
+      // delete
+      // updata
+      this.$http.post('/index.php/Userc/index', this.loginForm).then((res)=> {console.log(res)})
+      // this.$http.post('/student/login', this.loginForm).then((res)=> {console.log(res)})
+    }
+  }
 }
 </script>
 
