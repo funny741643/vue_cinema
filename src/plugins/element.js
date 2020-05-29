@@ -19,7 +19,11 @@ import {
   RadioGroup,
   RadioButton,
   Cascader,
-  Dialog
+  Dialog,
+  Message,
+  Table,
+  TableColumn,
+  DatePicker
 } from 'element-ui'
 
 Vue.use(Container)
@@ -42,3 +46,8 @@ Vue.use(RadioGroup)
 Vue.use(RadioButton)
 Vue.use(Cascader)
 Vue.use(Dialog)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(DatePicker)
+Vue.component(Message.name, Message)
+Vue.prototype.$message = Message

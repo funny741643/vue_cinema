@@ -32,7 +32,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item class="btns">
-          <el-button type="primary" class="registerBtn">点击注册</el-button>
+          <el-button type="primary" class="registerBtn" @click="handleSubmit">点击注册</el-button>
           <el-button type="info" @click="resetLoginForm">重置</el-button>
         </el-form-item>
       </el-form>
@@ -82,7 +82,7 @@ export default {
           { validator: validatePass, trigger: 'blur' }
         ],
         // 检验两次密码是否一致
-        checkPass: [{ validator: validatePass2, trigger: ['blur','change'] }],
+        checkPass: [{ validator: validatePass2, trigger: ['blur', 'change'] }],
         email: [
           { required: true, message: '请输入邮箱地址', trigger: 'blur' },
           { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
@@ -91,8 +91,25 @@ export default {
     }
   },
   methods: {
-    resetLoginForm () {
-        this.$refs.registerFormRef.resetFields()
+    resetLoginForm() {
+      this.$refs.registerFormRef.resetFields()
+    },
+    async handleSubmit() {
+      let _this = this
+      const { data: res } = await this.$http.post('index.php/index/Userc/register', this.registerForm)
+      this.resetLoginForm()
+      if (res.flag === 1) {
+        this.$message({
+          message: '恭喜你，注册成功',
+          type: 'success',
+          duration: 1000,
+          onClose() {
+            _this.$router.push('/login')
+          }
+        })
+      } else {
+        this.$message.error('注册失败！')
+      }
     }
   }
 }

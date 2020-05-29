@@ -2,32 +2,41 @@
   <div>
     <el-container>
       <el-header>SOE星光影院管理系统</el-header>
+      <!-- 管理列表 -->
       <el-container>
         <el-aside width="250px">
           <el-menu
-            default-active="2"
+            :default-active="activePath"
             class="el-menu-vertical-demo"
-            @open="handleOpen"
-            @close="handleClose"
+            router
           >
-            <el-menu-item index="1">
+            <el-menu-item index="/admin/hall" @click="saveActivePath('/admin/hall')">
               <i class="el-icon-menu"></i>
-              <span slot="title">导航一</span>
+              <span>影厅管理</span>
             </el-menu-item>
-            <el-menu-item index="2">
+            <el-menu-item index="/admin/site" @click="saveActivePath('/admin/site')">
               <i class="el-icon-menu"></i>
-              <span slot="title">导航二</span>
+              <span>座位管理</span>
             </el-menu-item>
-            <el-menu-item index="3">
+            <el-menu-item index="/admin/movie" @click="saveActivePath('/admin/movie')">
               <i class="el-icon-document"></i>
-              <span slot="title">导航三</span>
+              <span>剧目管理</span>
             </el-menu-item>
-            <el-menu-item index="4">
+            <el-menu-item index="/admin/plan" @click="saveActivePath('/admin/plan')">
               <i class="el-icon-setting"></i>
-              <span slot="title">导航四</span>
+              <span>演出管理</span>
+            </el-menu-item>
+            <el-menu-item index="/admin/ticket" @click="saveActivePath('/admin/ticket')">
+              <i class="el-icon-setting"></i>
+              <span>影票管理</span>
+            </el-menu-item>
+            <el-menu-item index="/admin/statistics" @click="saveActivePath('/admin/statistics')">
+              <i class="el-icon-setting"></i>
+              <span>销售统计</span>
             </el-menu-item>
           </el-menu>
         </el-aside>
+        <!-- 内容展示区 -->
         <el-main>
             <router-view></router-view>
         </el-main>
@@ -37,7 +46,23 @@
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      activePath: ''
+    }
+  },
+  methods: {
+    saveActivePath(activePath) {
+      window.sessionStorage.setItem('adminActivePath', activePath)
+      this.activePath = activePath
+    }
+  },
+  created() {
+    console.log(window.sessionStorage.getItem('adminActivePath'))
+    this.activePath = window.sessionStorage.getItem('adminActivePath') 
+  }
+}
 </script>
 
 <style lang="less" scoped>

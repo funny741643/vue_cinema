@@ -10,6 +10,12 @@ import Movies from '../components/Movies/Movies.vue'
 import Admin from '../components/Admin/admin.vue'
 import MovieDetail from '../components/MovieDetail/index.vue'
 import Ticket from '../components/Ticket/index.vue'
+import Movie from '../components/Admin/movie.vue'
+import Hall from '../components/Admin/hall.vue'
+import Site from '../components/Admin/site.vue'
+import Plan from '../components/Admin/plan.vue'
+import Adminticket from '../components/Admin/ticket.vue'
+import Statistics from '../components/Admin/statistics.vue'
 Vue.use(VueRouter)
 const routes = [{
     path: '/',
@@ -25,7 +31,26 @@ const routes = [{
   },
   {
     path: '/admin',
-    component: Admin
+    component: Admin,
+    children: [{
+      path: '/admin/hall',
+      component: Hall
+    }, {
+      path: '/admin/site',
+      component: Site
+    }, {
+      path: '/admin/movie',
+      component: Movie
+    }, {
+      path: '/admin/plan',
+      component: Plan
+    }, {
+      path: '/admin/ticket',
+      component: Adminticket
+    }, {
+      path: '/admin/statistics',
+      component: Statistics
+    }]
   },
   {
     path: '/home',
@@ -53,6 +78,22 @@ const routes = [{
     }]
   }
 ]
+
+// 导航守卫
+// 使用 router.beforeEach 注册一个全局前置守卫，判断用户是否登陆
+// router.beforeEach((to, from, next) => {
+//   if (to.path === '/login') {
+//     next();
+//   } else {
+//     let token = localStorage.getItem('Authorization');
+//     if (token === 'null' || token === '') {
+//       next('/login');
+//     } else {
+//       next();
+//     }
+//   }
+// });
+
 
 const router = new VueRouter({
   routes
