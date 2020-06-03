@@ -43,13 +43,8 @@ export default {
   },
   created() {
     this.activePath = window.sessionStorage.getItem('activePath')
-    this.getMovieList();
   },
   methods: {
-    async getMovieList() {
-      const data = await this.$http.get('index.php/index/Performancec/show')
-      console.log(data);
-    },
     saveNavState(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath

@@ -3,19 +3,15 @@
     <!-- 电影海报信息展示 -->
     <div class="movie_display">
       <div class="movie_playbill">
-        <img
-          src="https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_SX300.jpg"
-          width="240px"
-          height="330px"
-        />
+        <img :src="movieInfo.movie_Cover" width="240px" height="330px" />
       </div>
       <div class="movie_info">
-        <h1 class="movie_name">IRON MAN3</h1>
-        <p class="movie_type">科幻 动作 漫威</p>
-        <p class="movie_area">美国/120分钟</p>
-        <p class="show_date">2018-09-10大陆上映</p>
+        <h1 class="movie_name">{{movieInfo.movie_Name}}</h1>
+        <p class="movie_type">{{movieInfo.movie_Type}}</p>
+        <p class="movie_area">{{movieInfo.movie_Time}}</p>
+        <p class="show_date">{{movieInfo.movie_Start}}大陆上映</p>
         <el-button type="primary">
-          <a href="#/ticket/440">购票</a>
+          <a :href="`#/ticket/${id}`">购票</a>
         </el-button>
       </div>
       <div class="office_records">
@@ -24,11 +20,8 @@
     </div>
     <!-- 电影剧情简介 -->
     <div class="story_introduction">
-      <h1>剧情简介：</h1>时光荏苒，岁月无声。日子不紧不慢的如涓涓溪水静静的流去，而从身边流去的只有时光，沉淀下来的是与你一路相伴的幸福和快乐，温馨和安暖。
-      于我，在这个凋零都感受到诗意横溢的秋，只想做一件事，拈一片绯红的枫叶，轻轻地刻上我的心语。对信仰，是我今生永不改变的主题！
-      而后，幸福的寄往有你的那个城市。从此，在我心里，于我的生命里，轻握你许的安暖，静静地在岁月的彼岸，为你守候一世永恒！
-      一段情，反复的掂量，最后加深了岁月的绵长。一路追赶里，一路追忆里，最后得到的是什么，最后又失去的是什么。
-      或许，只有我们在静思的时候才会明白，这路的追忆里，我们得到的快乐往往比痛苦要少。当相思成殇的时候，除了对月徒悲叹之外，什么也不曾抓到。
+      <h1>剧情简介：</h1>
+      {{movieInfo.movie_introduce}}
     </div>
     <!-- 电影短评 -->
     <div class="short_comment">
@@ -57,19 +50,42 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      commentValue: ''
+      commentValue: '',
+      id: 0,
+      movieInfo: {}
     }
   },
   methods: {
-    handleDialog() {
+    async handleDialog() {
+      const data = {}
+      data.comment = this.commentValue
+      data.movieId = this.id
+      console.log(data)
+      const { data: res } = await this.$http.post('index.php/index/Commentc/add', data)
+      if(res.flag === 1) {
+        this.$message.success('提交评论成功')
+        this.getCommentList()
+      }
       this.dialogVisible = false
     },
+    getCommentList() {
+      const data = { movie_Id: this.id }
+      this.$http.post('index.php/index/Commentc/show', data).then(res => {
+        console.log(res)
+      })
+    },
+    async getMovieDetail() {
+      const { data: res } = await this.$http.post('index.php/index/Performancec/content', { movie_Id: this.id })
+      this.movieInfo = res
+    },
     handleWrite() {
-        this.dialogVisible = true
+      this.dialogVisible = true
     }
   },
-  mounted() {
-    console.log(this.$route.params.id)
+  created() {
+    this.id = parseInt(this.$route.params.id)
+    this.getMovieDetail()
+    this.getCommentList()
   }
 }
 </script>

@@ -54,11 +54,11 @@ export default {
     async handleLogin() {
       const {data: res} = await this.$http.post('index.php/index/Userc/index', this.loginForm)
       let _this = this
+      // this.userToken = 'Bearer' + res.data.data.body.token;
+      // 将用户token保存到vuex中
+      // this.changeLogin({ Authorization: _this.userToken });
+      // this.$message.success('恭喜你，登录成功')
       if (res.flag === 1) {
-        // this.userToken = 'Bearer' + res.data.data.body.token;
-        // 将用户token保存到vuex中
-        // this.changeLogin({ Authorization: _this.userToken });
-        // this.$message.success('恭喜你，登录成功')
         this.$message({
           type: 'success',
           message: '恭喜你，登录成功',

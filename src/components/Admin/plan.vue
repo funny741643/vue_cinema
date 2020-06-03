@@ -1,10 +1,165 @@
 <template>
-  <div>我是安排演出计划页面管理界面</div>
+  <div>
+    <div class="addBtn">
+      <el-button type="primary" @click="handleAdd">增加演出</el-button>
+    </div>
+    <el-table :data="planList" stripe style="width: 100%" border>
+      <el-table-column prop="performance_Id" label="演出Id" width="180"></el-table-column>
+      <el-table-column prop="movie_Name" label="电影名称" width="180"></el-table-column>
+      <el-table-column prop="theater_Name" label="演出厅名称" width="180"></el-table-column>
+      <el-table-column prop="performance_Start" label="开始时间" width="200"></el-table-column>
+      <el-table-column prop="performance_End" label="结束时间" width="200"></el-table-column>
+      <el-table-column prop="operator" label="操作">
+        <template slot-scope="scope">
+          <el-button size="large" @click="handleChange(scope.row)">编辑</el-button>
+          <el-button size="large" type="danger">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 添加演出计划 -->
+    <el-dialog title="新增演出" :visible.sync="addPlanVisible" width="50%" @close="dialogClose">
+      <div>
+        <el-form ref="addPlanRef" :model="addForm" label-width="100px">
+          <el-form-item label="电影名称" prop="movie_Name">
+            <el-input v-model="addForm.movie_Name" @input="movieNameChange"></el-input>
+          </el-form-item>
+          <div class="movie_list">
+              <p v-for="(item,index) in movieList" :key="index" style="margin-bottom: '5px'" @click="selectMovie(item)">{{item.movie_Name}}</p>
+          </div>
+          <el-form-item label="选择演出厅" prop="theater_Name">
+            <el-select v-model="addForm.theater_Id" placeholder="请选择演出厅">
+              <el-option
+                v-for="item in hallList"
+                :key="item.theater_Id"
+                :label="item.theater_Name"
+                :value="item.theater_Id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="开始时间" prop="performance_Start">
+            <el-date-picker v-model="addForm.performance_Start" type="datetime" placeholder="选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+          </el-form-item>
+          <!-- <el-form-item label="结束时间" prop="performance_End">
+            <el-date-picker v-model="addForm.performance_End" type="datetime" placeholder="选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+          </el-form-item> -->
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button @click="addPlanVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitAdd">点击添加</el-button>
+      </div>
+    </el-dialog>
+    <!-- 更新演出计划 -->
+    <el-dialog title="更新演出计划" :visible.sync="changePlanVisible" width="50%">
+      <div>
+        <el-form ref="form" :model="changeForm" label-width="80px">
+          <el-form-item>
+            <el-input placeholder="演出Id" v-model="changeForm.performance_Id" type="number"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input placeholder="电影名称" v-model="changeForm.movie_Name" type="number"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input placeholder="演出厅名称" v-model="changeForm.theater_Name" type="number"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker v-model="changeForm.performance_Start" type="datetime" placeholder="更改开始时间"></el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker v-model="changeForm.performance_End" type="datetime" placeholder="更改结束时间"></el-date-picker>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button @click="changePlanVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitChange">点击更新</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      planList: [],
+      addForm: {
+        movie_Name: '',
+        theater_Id: '',
+        performance_Start: ""
+      },
+      movieList: [],
+      hallList: [],
+      changeForm: [],
+      addPlanVisible: false,
+      changePlanVisible: false,
+      movie_Time: '',
+      movie_Id: 0,
+    }
+  },
+  methods: {
+    async getPlanList() {
+      const { data: res } = await this.$http.get('index.php/index/Performancec/pshow')
+      this.planList = res
+    },
+    async getHallList() {
+      const { data: res } = await this.$http.get('index.php/index/Theaterc/show')
+      this.hallList = res
+    },
+    dialogClose() {
+      // this.$refs.addPlanRef.resetFields()
+    },
+    handleAdd() {
+      this.addPlanVisible = true
+    },
+    movieNameChange() {
+      let data = {}
+      data.str = this.addForm.movie_Name
+      this.$http.post('index.php/index/Moviec/find',data).then((res)=>{
+        this.movieList = res.data
+      })
+    },
+    selectMovie(item) {
+      this.addForm.movie_Name = item.movie_Name
+      this.movie_Time = item.movie_Time
+      this.movie_Id = item.movie_Id
+    },
+    async submitAdd() {
+      console.log(this.addForm)
+      this.addForm.movie_Time = this.movie_Time
+      this.addForm.movie_Id = this.movie_Id
+      const { data: res } = await this.$http.post('index.php/index/Performancec/plan', this.addForm)
+      this.addPlanVisible = false
+    },
+    handleChange(row) {
+      this.changePlanVisible = true
+      this.changeForm = row
+    },
+    submitChange() {
+      this.changePlanVisible = true
+    }
+  },
+  created() {
+    this.getPlanList()
+    this.getHallList()
+  }
+}
 </script>
 
 <style lang="less" scoped>
+.addBtn {
+  text-align: right;
+  margin-bottom: 10px;
+}
+.movie_list {
+  padding: 0 100px 10px;
+  p {
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+    background: #ffd;
+    color: black;
+  }
+}
 </style>

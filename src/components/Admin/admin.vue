@@ -14,10 +14,6 @@
               <i class="el-icon-menu"></i>
               <span>影厅管理</span>
             </el-menu-item>
-            <el-menu-item index="/admin/site" @click="saveActivePath('/admin/site')">
-              <i class="el-icon-menu"></i>
-              <span>座位管理</span>
-            </el-menu-item>
             <el-menu-item index="/admin/movie" @click="saveActivePath('/admin/movie')">
               <i class="el-icon-document"></i>
               <span>剧目管理</span>
@@ -26,9 +22,9 @@
               <i class="el-icon-setting"></i>
               <span>演出管理</span>
             </el-menu-item>
-            <el-menu-item index="/admin/ticket" @click="saveActivePath('/admin/ticket')">
+            <el-menu-item index="/admin/user" @click="saveActivePath('/admin/user')">
               <i class="el-icon-setting"></i>
-              <span>影票管理</span>
+              <span>用户管理</span>
             </el-menu-item>
             <el-menu-item index="/admin/statistics" @click="saveActivePath('/admin/statistics')">
               <i class="el-icon-setting"></i>
@@ -74,8 +70,5 @@ export default {
   font-size: 30px;
   text-align: center;
   line-height: 60px;
-}
-.el-aside {
-  background-color: #cce;
 }
 </style>

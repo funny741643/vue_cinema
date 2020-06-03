@@ -12,9 +12,8 @@ import MovieDetail from '../components/MovieDetail/index.vue'
 import Ticket from '../components/Ticket/index.vue'
 import Movie from '../components/Admin/movie.vue'
 import Hall from '../components/Admin/hall.vue'
-import Site from '../components/Admin/site.vue'
 import Plan from '../components/Admin/plan.vue'
-import Adminticket from '../components/Admin/ticket.vue'
+import User from '../components/Admin/user.vue'
 import Statistics from '../components/Admin/statistics.vue'
 Vue.use(VueRouter)
 const routes = [{
@@ -36,17 +35,14 @@ const routes = [{
       path: '/admin/hall',
       component: Hall
     }, {
-      path: '/admin/site',
-      component: Site
-    }, {
       path: '/admin/movie',
       component: Movie
     }, {
       path: '/admin/plan',
       component: Plan
     }, {
-      path: '/admin/ticket',
-      component: Adminticket
+      path: '/admin/user',
+      component: User
     }, {
       path: '/admin/statistics',
       component: Statistics
