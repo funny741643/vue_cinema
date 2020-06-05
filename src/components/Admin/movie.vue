@@ -3,10 +3,10 @@
     <div class="addBtn">
       <el-button type="primary" @click="handleAdd">增加剧目</el-button>
     </div>
-    <el-table :data="movieList" stripe style="width: 100%" border>
-      <el-table-column prop="movie_Name" label="电影名称" width="160"></el-table-column>
+    <el-table :data="movieList" stripe style="width: 100%" border max-height="500">
+      <el-table-column prop="movie_Name" label="电影名称" width="140"></el-table-column>
       <el-table-column prop="movie_Type" label="电影类型" width="160"></el-table-column>
-      <el-table-column prop="movie_Brief" label="电影简介" width="160"></el-table-column>
+      <el-table-column prop="movie_Brief" label="电影简介" width="200"></el-table-column>
       <el-table-column prop="movie_Time" label="电影时长" width="160"></el-table-column>
       <el-table-column prop="movie_Start" label="上映时间" width="180"></el-table-column>
       <el-table-column prop="movie_End" label="下架时间" width="180"></el-table-column>
@@ -30,7 +30,10 @@
           <el-input placeholder="电影简介" v-model="addForm.brief"></el-input>
         </el-form-item>
         <el-form-item prop="time">
-          <el-input placeholder="电影时长" v-model="addForm.time"></el-input>
+          <el-input placeholder="电影时长,请写成HH:mm:ss的格式" v-model="addForm.time"></el-input>
+        </el-form-item>
+        <el-form-item prop="cover">
+          <el-input placeholder="电影封面" v-model="addForm.cover"></el-input>
         </el-form-item>
         <el-form-item prop="start">
           <el-date-picker
@@ -71,6 +74,9 @@
             <el-input placeholder="电影时长" v-model="changeForm.movie_Time"></el-input>
           </el-form-item>
           <el-form-item>
+            <el-input placeholder="电影封面" v-model="changeForm.movie_Cover"></el-input>
+          </el-form-item>
+          <el-form-item>
             <el-date-picker v-model="changeForm.movie_Start" type="date" placeholder="选择上映时间"></el-date-picker>
           </el-form-item>
           <el-form-item>
@@ -98,6 +104,7 @@ export default {
         type: '',
         brief: '',
         time: '',
+        cover: '',
         start: '',
         end: ''
       },
@@ -181,6 +188,9 @@ export default {
     async getMovieList() {
       const { data: res } = await this.$http.post('index.php/index/Performancec/show')
       this.movieList = res
+      this.movieList.forEach((item)=>{
+        item.movie_Brief = item.movie_Brief.substr(0,10)+'...'
+      })
     }
   },
   created() {

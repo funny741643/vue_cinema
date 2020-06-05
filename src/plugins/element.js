@@ -27,7 +27,8 @@ import {
   Switch,
   MessageBox,
   Select,
-  Option
+  Option,
+  Tooltip
 } from 'element-ui'
 
 Vue.use(Container)
@@ -56,6 +57,7 @@ Vue.use(DatePicker)
 Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Tooltip)
 Vue.component(Message.name, Message)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

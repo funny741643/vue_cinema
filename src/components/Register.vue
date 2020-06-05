@@ -96,14 +96,15 @@ export default {
     },
     async handleSubmit() {
       let _this = this
+      console.log(this.registerForm)
       const { data: res } = await this.$http.post('index.php/index/Userc/register', this.registerForm)
-      this.resetLoginForm()
       if (res.flag === 1) {
         this.$message({
           message: '恭喜你，注册成功',
           type: 'success',
           duration: 1000,
           onClose() {
+            _this.resetLoginForm()
             _this.$router.push('/login')
           }
         })

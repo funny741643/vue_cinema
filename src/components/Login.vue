@@ -21,19 +21,47 @@
           ></el-input>
         </el-form-item>
         <el-form-item class="btns">
+          <!-- 忘记密码 -->
+          <el-tooltip class="item" effect="dark" content="忘记密码了，呜呜" placement="top-start">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              circle
+              class="forgetPass"
+              @click="handleChangeEmail"
+            ></el-button>
+          </el-tooltip>
           <el-button type="primary" class="loginBtn" @click="handleLogin">点击登录</el-button>
           <el-link href="#/register">前往注册</el-link>
         </el-form-item>
       </el-form>
     </div>
+    <!-- 邮箱地址 -->
+    <el-dialog
+      title="我的邮箱地址"
+      :visible.sync="EmailDialogVisible"
+      width="50%"
+      @close="EmailDialogClose"
+    >
+      <el-form ref="emailFormRef" :model="emailForm" :rules="emailFormRules">
+        <el-form-item prop="email">
+          <el-input v-model="emailForm.email" placeholder="请填入您的邮箱"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="EmailDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleEmailSubmit">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-// import { mapMutations } from 'vuex'
 export default {
   data() {
     return {
+      EmailDialogVisible: false,
+      emailForm: {},
       loginForm: {
         username: '',
         password: ''
@@ -47,28 +75,50 @@ export default {
           { required: true, message: '请输入登录密码', trigger: 'blur' },
           { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
         ]
+      },
+      emailFormRules: {
+        value: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ]
       }
     }
   },
   methods: {
+    handleChangeEmail() {
+      this.EmailDialogVisible = true
+    },
+    async handleEmailSubmit() {
+      console.log(this.emailForm)
+      const res = await this.$http.post('index.php/index/Repasswordc/forget', this.emailForm)
+      if(res.data == true) {
+        this.EmailDialogVisible = false
+        this.EmailDialogClose()
+      }
+    },
+    EmailDialogClose() {
+      this.$refs.emailFormRef.resetFields()
+    },
     async handleLogin() {
-      const {data: res} = await this.$http.post('index.php/index/Userc/index', this.loginForm)
+      console.log(this.loginForm)
+      const { data: res } = await this.$http.post('index.php/index/Userc/index', this.loginForm)
       let _this = this
-      // this.userToken = 'Bearer' + res.data.data.body.token;
-      // 将用户token保存到vuex中
-      // this.changeLogin({ Authorization: _this.userToken });
-      // this.$message.success('恭喜你，登录成功')
-      if (res.flag === 1) {
+      if (res.flag.user_Status === 1) {
         this.$message({
           type: 'success',
           message: '恭喜你，登录成功',
           duration: 1000,
           onClose() {
+            localStorage.setItem('userInfo', JSON.stringify(res.flag))
             _this.$router.push('/home')
           }
         })
-      } else {
+      } else if (res.flag == 3) {
         this.$message.error('登录失败，请验证你的密码是否正确')
+      } else if (res.flag == 2) {
+        this.message.error('该账户已冻结')
+      } else if (res.flag == 4) {
+        this.$router.push('/admin')
       }
     }
   }
@@ -87,6 +137,8 @@ export default {
 }
 .login-container {
   background-color: #2b4b6b;
+  background-image: url(https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591279941466&di=2d0207ed69568cfe34cab6c6c1a6d9d1&imgtype=0&src=http%3A%2F%2Fclubimg.club.vmall.com%2Fdata%2Fattachment%2Fforum%2F202004%2F28%2F232531etkhnpud1wilji7l.jpg&qq-pf-to=pcqq.c2c);
+  background-size: cover;
   height: 100%;
 }
 .login-wrapper {
@@ -111,6 +163,10 @@ export default {
   justify-content: flex-end;
   .loginBtn {
     margin-right: 20px;
+  }
+  .forgetPass {
+    position: relative;
+    right: 180px;
   }
 }
 </style>

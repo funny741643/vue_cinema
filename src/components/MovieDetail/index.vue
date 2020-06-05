@@ -10,9 +10,7 @@
         <p class="movie_type">{{movieInfo.movie_Type}}</p>
         <p class="movie_area">{{movieInfo.movie_Time}}</p>
         <p class="show_date">{{movieInfo.movie_Start}}大陆上映</p>
-        <el-button type="primary">
-          <a :href="`#/ticket/${id}`">购票</a>
-        </el-button>
+        <el-button type="primary" @click="handleWillBuy">购票</el-button>
       </div>
       <div class="office_records">
         <p>累计票房: 1440万</p>
@@ -21,7 +19,7 @@
     <!-- 电影剧情简介 -->
     <div class="story_introduction">
       <h1>剧情简介：</h1>
-      {{movieInfo.movie_introduce}}
+      {{movieInfo.movie_Brief}}
     </div>
     <!-- 电影短评 -->
     <div class="short_comment">
@@ -42,6 +40,21 @@
         </span>
       </el-dialog>
     </div>
+
+    <!-- 评论展示 -->
+    <div class="comment_wrapper" v-for="item in commentList" :key="item.comment_Id">
+      <div class="name">{{item.user_Name}}</div>
+      <div class="date">
+        {{item.comment_Date}}
+        <i
+          class="el-icon-star-on"
+          v-for="item in 4"
+          :key="item"
+          style="color:rgba(240, 161, 15, 0.891)"
+        ></i>
+      </div>
+      <div class="comment_info">{{item.comment_Content}}</div>
+    </div>
   </div>
 </template>
 
@@ -52,7 +65,9 @@ export default {
       dialogVisible: false,
       commentValue: '',
       id: 0,
-      movieInfo: {}
+      movieInfo: {},
+      commentList: [],
+      userInfo: {}
     }
   },
   methods: {
@@ -60,9 +75,8 @@ export default {
       const data = {}
       data.comment = this.commentValue
       data.movieId = this.id
-      console.log(data)
       const { data: res } = await this.$http.post('index.php/index/Commentc/add', data)
-      if(res.flag === 1) {
+      if (res.flag === 1) {
         this.$message.success('提交评论成功')
         this.getCommentList()
       }
@@ -71,7 +85,7 @@ export default {
     getCommentList() {
       const data = { movie_Id: this.id }
       this.$http.post('index.php/index/Commentc/show', data).then(res => {
-        console.log(res)
+        this.commentList = res.data
       })
     },
     async getMovieDetail() {
@@ -79,11 +93,23 @@ export default {
       this.movieInfo = res
     },
     handleWrite() {
-      this.dialogVisible = true
+      if (this.userInfo.user_Id) {
+        this.dialogVisible = true
+      } else {
+        this.$router.push('/login')
+      }
+    },
+    handleWillBuy() {
+      if (this.userInfo.user_Id) {
+        this.$router.push(`/ticket/${this.id}`)
+      } else {
+        this.$router.push('/login')
+      }
     }
   },
   created() {
     this.id = parseInt(this.$route.params.id)
+    this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.getMovieDetail()
     this.getCommentList()
   }
@@ -146,5 +172,19 @@ export default {
   height: 300px;
   background-color: #fff;
   display: flex;
+}
+.comment_wrapper {
+  width: 99%;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+  padding-left: 10px;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  .name {
+    font-size: 25px;
+  }
+  .date {
+    color: #999;
+    margin-bottom: 20px;
+  }
 }
 </style>

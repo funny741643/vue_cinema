@@ -52,6 +52,36 @@
         </div>
       </div>
     </div>
+    <!-- 出票对话框 -->
+    <el-dialog title="票务详情,可以到个人中心查找该影票！！" :visible.sync="TicketDialogVisible" width="50%">
+      <div class="ticket_box">
+        <div class="ticket_left">
+          <div class="theater_wrapper">
+            <div class="theater_name">
+              SOE星光影院
+              <img
+                src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1606309359,1019805588&fm=26&gp=0.jpg"
+                alt
+              />
+              <div class="english">STARLIGHT•CINEMA</div>
+            </div>
+          </div>
+          <div class="movie_Date box">时间：{{this.ticketDetail.performance_Start}}</div>
+          <div class="theater_Id box">票厅：{{this.hall}} </div>
+          <div class="movie_Name box">电影名：{{this.movieInfo.movie_Name}}</div>
+          <div class="seat box">座位：{{this.ticketDetail.seat_Row}}行{{this.ticketDetail.seat_Col}}列</div>
+          <div class="ticket_price box">票价：{{this.price}}</div>
+        </div>
+        <div class="ticket_right">
+          <div class="left">副劵</div>
+          <div class="left_num"></div>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="TicketDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleTicketConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -59,7 +89,7 @@
 export default {
   data() {
     return {
-      hall: 'N号激光厅',
+      hall: '',
       options: [],
       time: '',
       movie_Id: 0,
@@ -68,10 +98,15 @@ export default {
       theaterId: 0,
       seatList: [],
       seatRow: 0,
+      price: '',
+      userId: 0,
       style1: { background: '#ccc' },
       style2: { background: 'red' },
       getTicketInfo: {},
-      key: 1
+      key: 1,
+      TicketDialogVisible: false,
+      movieInfo: {},
+      ticketDetail: {}
     }
   },
   methods: {
@@ -81,6 +116,7 @@ export default {
       data.performanceId = this.performanceId
       data.theaterId = this.theaterId
       const { data: res } = await this.$http.post('index.php/index/Seatc/show', data)
+      console.log(res)
       this.seatList = res
       document.getElementById('site_box').style.display = 'block'
     },
@@ -94,6 +130,7 @@ export default {
       data.movieId = this.movie_Id
       this.seatRow = selectedObject.theater_rownum
       const { data: res } = await this.$http.post('index.php/index/Performancec/select', data)
+      this.price = res[0].movie_Price
       this.performanceId = res[0].performance_Id
       this.theaterId = res[0].theater_Id
       const dateTime = res[0].performance_Start
@@ -123,25 +160,42 @@ export default {
       e.target.style.background = 'skyblue'
       this.getTicketInfo.performanceId = this.performanceId
       this.getTicketInfo.seatId = item.seat_Id
+      this.getTicketInfo.movieId = this.movie_Id
+      this.getTicketInfo.price = this.price
+      this.getTicketInfo.userId = this.userId
     },
     // 确认购票
-    handleGetTicket() {
+    async handleGetTicket() {
       var arr = Object.keys(this.getTicketInfo)
       if (arr.length === 0) {
         return this.$message.info('请先选择座位，再购票')
       }
       console.log(this.getTicketInfo)
-      this.$http.post('index.php/index/Ticketc/buy', this.getTicketInfo).then(res => {
-        console.log(res)
-      })
+      const {data: res} = await this.$http.post('index.php/index/Ticketc/buy', this.getTicketInfo)
+      this.ticketDetail = res.flag
+      if(this.ticketDetail.order_Id) {
+        this.TicketDialogVisible = true
+      } else {
+        this.$message.error('购票失败，错误代码xuesihao')
+      }
+    },
+    async getMovieDetail() {
+      const { data: res } = await this.$http.post('index.php/index/Performancec/content', { movie_Id: this.movie_Id })
+      this.movieInfo = res
+    },
+    handleTicketConfirm() {
+      this.TicketDialogVisible = false
+      this.$router.push('/personal')
     }
   },
   // 获取演出厅列表
   created() {
     this.movie_Id = parseInt(this.$route.params.id)
+    this.userId = JSON.parse(localStorage.getItem('userInfo')).user_Id
     this.$http.get('index.php/index/Theaterc/show').then(res => {
       this.hallList = res.data
     })
+    this.getMovieDetail()
   }
 }
 </script>
@@ -190,6 +244,75 @@ export default {
     .buy_btn {
       transform: translate(225px);
     }
+  }
+}
+.ticket_box {
+  height: 330px;
+  width: 500px;
+  background-color: rgba(255, 141, 11, 0.5);
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.ticket_left {
+  width: 370px;
+  height: 330px;
+  float: left;
+  position: relative;
+  border-right: 1px dashed black;
+  .theater_name {
+    font-size: 30px;
+    margin-bottom: 30px;
+    margin-left: 120px;
+    img {
+      height: 80px;
+      width: 85px;
+      background-color: white;
+      position: absolute;
+      top: 0;
+      left: 20px;
+    }
+    .english {
+      font-size: 15px;
+      margin-top: 5px;
+      margin-left: 25px;
+    }
+  }
+  .box {
+    height: 50px;
+    width: 130px;
+    line-height: 50px;
+    background-color: white;
+    border-radius: 5px 5px 5px 5px;
+    border: 1px solid rgba(255, 141, 11, 0.7);
+    box-shadow: 0 0 0 1px rgb(255, 141, 11);
+    margin-right: 5px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .movie_Date {
+    float: right;
+    width: 220px;
+  }
+  .movie_Name {
+    width: 85%;
+  }
+}
+.ticket_right {
+  width: 100px;
+  height: 300px;
+  float: left;
+  .left {
+    height: 50px;
+    width: 80px;
+    line-height: 50px;
+    margin-left: 30px;
+    font-size: 25px;
+    color: white;
+    text-align: center;
+    background-color: rgb(255, 141, 11);
   }
 }
 </style>

@@ -15,6 +15,10 @@ import Hall from '../components/Admin/hall.vue'
 import Plan from '../components/Admin/plan.vue'
 import User from '../components/Admin/user.vue'
 import Statistics from '../components/Admin/statistics.vue'
+import Personal from '../components/Personal/Personal.vue'
+import Info from '../components/Personal/Info.vue'
+import Myticket from '../components/Personal/Myticket.vue'
+import FindPass from '../components/FindPass.vue'
 Vue.use(VueRouter)
 const routes = [{
     path: '/',
@@ -29,8 +33,25 @@ const routes = [{
     component: Register
   },
   {
+    path: '/find',
+    component: FindPass
+  },
+  {
+    path: '/personal',
+    redirect: '/personal/info',
+    component: Personal,
+    children: [{
+      path: '/personal/info',
+      component: Info
+    }, {
+      path: '/personal/ticket',
+      component: Myticket
+    }]
+  },
+  {
     path: '/admin',
     component: Admin,
+    redirect: '/admin/hall',
     children: [{
       path: '/admin/hall',
       component: Hall

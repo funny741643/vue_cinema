@@ -6,7 +6,8 @@
         <span>SOE星光剧场</span>
       </div>
       <div>
-        <el-link type="primary" href="#/login" style="fontSize:20px">点击登录</el-link>
+        <el-link type="primary" href="#/personal" style="fontSize:20px" v-if="userInfo.user_Id">{{userInfo.user_Name}}</el-link>
+        <el-link type="primary" href="#/login" style="fontSize:20px"  v-else>点击登录</el-link>
       </div>
     </el-header>
     <div class="nav">
@@ -38,11 +39,16 @@ export default {
       searchValue: '',
       MOVIE_API_URL: 'https://www.omdbapi.com/?s=man&apikey=4a3b711b',
       movies: [],
-      key: true
+      userInfo: {},
+      key: true,
     }
   },
   created() {
     this.activePath = window.sessionStorage.getItem('activePath')
+    if (localStorage.getItem('userInfo') === null) {
+      localStorage.setItem('userInfo',JSON.stringify({user_Id: 0}))
+    }
+    this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
   },
   methods: {
     saveNavState(activePath) {
@@ -52,7 +58,6 @@ export default {
     search() {
       this.$http.post(`https://www.omdbapi.com/?s=${this.searchValue}&apikey=4a3b711b`).then(res => {
         this.movies = res.data.Search
-        console.log(this.movies)
         if (this.$route.path !== '/movies') {
           this.$router.push({name: 'Movies'})
           window.localStorage.setItem('searchMoviesValue',JSON.stringify(this.movies))
